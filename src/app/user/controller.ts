@@ -4,29 +4,6 @@ import joi from "joi"
 import bcryptjs from "bcryptjs"
 
 const prisma = new PrismaClient()
-export function getUsers(req: Request, res: Response, next: NextFunction) {
-    async function main() {
-        try {
-            const users = await prisma.users.findMany({
-                select: {
-                    id: true,
-                    username: true,
-                    name: true,
-                    role: true,
-                    status: true,
-                    created_at: true,
-                    updated_at: true,
-                    posts: true,
-
-                }
-            })
-            res.json(users)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-    main()
-}
 
 export function postUser(req: Request, res: Response, next: NextFunction) {
     const shcema = joi.object().keys({
@@ -59,7 +36,7 @@ export function postUser(req: Request, res: Response, next: NextFunction) {
     async function main() {
         try {
             const password = await bcryptjs.hash(req.body.password, 10)
-            const addUser = await prisma.users.create({
+            await prisma.users.create({
                 data: {
                     name: req.body.name,
                     username: req.body.username,
@@ -72,6 +49,119 @@ export function postUser(req: Request, res: Response, next: NextFunction) {
 
         } catch (error) {
             console.log(error)
+        }
+    }
+    main()
+}
+
+export function getUsers(req: Request, res: Response, next: NextFunction) {
+    async function main() {
+        try {
+            const users = await prisma.users.findMany({
+                select: {
+                    id: true,
+                    username: true,
+                    name: true,
+                    role: true,
+                    status: true,
+                    created_at: true,
+                    updated_at: true,
+                    posts: true,
+                }
+            })
+            res.json(users)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    main()
+}
+
+export function getUserID(req: Request, res: Response, next: NextFunction) {
+    async function main() {
+        try {
+            const checkUser = await prisma.users.findUnique({
+                where: {
+                    id: req.params.id
+                }
+            })
+            if (!checkUser) {
+                return res.status(400).send({
+                    message: "User not found"
+                })
+            }
+            const user = await prisma.users.findUnique({
+                where: {
+                    id: req.params.id
+                },
+                select: {
+                    id: true,
+                    username: true,
+                    name: true,
+                    role: true,
+                    status: true,
+                    created_at: true,
+                    updated_at: true,
+                    posts: true,
+                }
+            })
+            res.json(user)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    main()
+}
+
+export function updateUser(req: Request, res: Response, next: NextFunction) {
+    async function main() {
+        const checkUser = await prisma.users.findUnique({
+            where: {
+                id: req.params.id
+            }
+        })
+        if (!checkUser) {
+            return res.status(400).send({
+                message: "User not found"
+            })
+        }
+        const user = await prisma.users.update({
+            where: {
+                id: req.params.id
+            },
+            data: {
+                name: req.body.name,
+                username: req.body.username,
+                role: req.body.role,
+                status: req.body.status,
+            }
+        })
+        return res.json(user)
+    }
+    main()
+}
+
+export function deleteUser(req: Request, res: Response, next: NextFunction) {
+    const main = async () => {
+        const checkUser = await prisma.users.findUnique({
+            where: {
+                id: req.params.id
+            }
+        })
+        if (!checkUser) {
+            return res.status(400).send({
+                message: "User not found"
+            })
+        }
+        const user = await prisma.users.delete({
+            where: {
+                id: req.params.id
+            }
+        })
+        return {
+            res: res.json({
+                message: `User ${req.params.id} deleted successfully`,
+            }),
         }
     }
     main()
