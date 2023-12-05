@@ -20,6 +20,15 @@ model users {
     updated_at DateTime @updatedAt
     status     Boolean  @default(false)
     posts      posts[]
+    imageId    String?
+    image      images?  @relation(fields: [imageId], references: [id])
+}
+
+model images {
+    id    String  @id @default(uuid()) @map("_id")
+    title String
+    url   String
+    users users[]
 }
 
 model posts {
