@@ -2,7 +2,7 @@ node_modules
 dist
 build
 src/log/
-src/uploads/images/
+uploads/images/*
 log
 .vscode
 # Keep environment variables out of version control
