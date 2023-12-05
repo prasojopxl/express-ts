@@ -80,16 +80,6 @@ export function getUsers(req: Request, res: Response, next: NextFunction) {
 export function getUserID(req: Request, res: Response, next: NextFunction) {
     async function main() {
         try {
-            const checkUser = await prisma.users.findUnique({
-                where: {
-                    id: req.params.id
-                }
-            })
-            if (!checkUser) {
-                return res.status(400).send({
-                    message: "User not found"
-                })
-            }
             const user = await prisma.users.findUnique({
                 where: {
                     id: req.params.id
@@ -105,6 +95,11 @@ export function getUserID(req: Request, res: Response, next: NextFunction) {
                     posts: true,
                 }
             })
+            if (!user) {
+                return res.status(400).send({
+                    message: "User not found"
+                })
+            }
             res.json(user)
         } catch (error) {
             console.log(error)

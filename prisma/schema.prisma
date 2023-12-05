@@ -25,10 +25,16 @@ model users {
 }
 
 model images {
-    id    String  @id @default(uuid()) @map("_id")
-    title String
-    url   String
-    users users[]
+    id         String   @id @default(uuid()) @map("_id")
+    title      String
+    url        String
+    size       Int
+    width      Int
+    height     Int
+    mimetype   String
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+    users      users[]
 }
 
 model posts {
