@@ -5,7 +5,6 @@ import routeUsers from "./app/user/index"
 import routeImages from "./app/images/index"
 import multer from "multer";
 import path from "path"
-import { join, dirname } from "path";
 
 
 dotenv.config()
@@ -23,9 +22,10 @@ const corsOptions = {
     },
 };
 
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "./uploads/images/");
+        cb(null, "uploads/images/");
     },
     filename: function (req, file, cb: any) {
         if (!file.originalname) {
@@ -44,12 +44,13 @@ app.use(express.urlencoded({
 }))
 
 app.get("/", (req, res) => {
+    console.log(path.dirname(__dirname))
     res.status(200).send({
         message: "Welcome APP !!!"
     })
 })
+app.use("/public", express.static(path.join(path.dirname(__dirname), "uploads/images")))
 app.use("/users", routeUsers)
-app.use(express.static("uploads/images"));
 app.use("/images", multer({ storage: storage }).any(), routeImages)
 // app.use("/uploads/images", express.static(join(__dirname, "/uploads/images")))
 

@@ -33,19 +33,19 @@ export function createImage(req: Request, res: Response, next: NextFunction) {
             const image = await prisma.images.create({
                 data: {
                     title: files[0].originalname,
-                    url: `/${files[0].path}`,
+                    url: `/public/${files[0].filename}`,
                     size: parseInt(files[0].size),
                     width: parseInt(`${imageSize(files[0].path).width}`),
                     height: parseInt(`${imageSize(files[0].path).height}`),
                     mimetype: files[0].mimetype
                 }
             })
-            // console.log(files ? files[0].path : "no files")
+            console.log(files ? files[0] : "no files")
             res.status(201).send({
                 message: "Image upload successfully",
                 data: {
                     title: files[0].originalname,
-                    url: `/${files[0].path}`,
+                    url: `/public/${files[0].filename}`,
                     mimetype: files[0].mimetype
                 }
             })
