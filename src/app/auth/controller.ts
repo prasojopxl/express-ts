@@ -7,6 +7,17 @@ import jwt from "jsonwebtoken"
 const prisma = new PrismaClient();
 export function Login(req: Request, res: Response, next: NextFunction) {
     async function main() {
+        const shcema = joi.object().keys({
+            username: joi.string().email().required(),
+            password: joi.string().required(),
+        })
+        const { error } = shcema.validate(req.body)
+        if (error) {
+            return res.status(400).send({
+                message: error.message
+            })
+        }
+
         const checkUser = await prisma.users.findUnique({
             where: {
                 username: req.body.username,
