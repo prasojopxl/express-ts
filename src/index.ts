@@ -4,6 +4,7 @@ import cors from "cors";
 import routeUsers from "./app/user/index"
 import routeImages from "./app/images/index"
 import routeMail from "./app/mail/index"
+import routeAuth from "./app/auth/index"
 import multer from "multer";
 import path from "path"
 
@@ -55,6 +56,7 @@ app.use("/public", express.static(path.join(path.dirname(__dirname), "uploads/im
 app.use("/users", routeUsers)
 app.use("/images", multer({ storage: storage }).any(), routeImages)
 app.use("/mail", routeMail)
+app.use("/auth", routeAuth)
 
 app.listen(port, () => {
     console.log(`server is running on port ${port}`)

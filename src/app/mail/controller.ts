@@ -18,6 +18,18 @@ export function testMail(req: Request, res: Response, next: NextFunction) {
 }
 
 export function sendMail(req: Request, res: Response, next: NextFunction) {
+    const shcema = joi.object().keys({
+        subject: joi.string().min(3).required(),
+        to: joi.string().email().required(),
+        message: joi.string().min(3).required()
+    })
+    const { error } = shcema.validate(req.body)
+    if (error) {
+        return res.status(400).send({
+            message: error.message
+        })
+    }
+
     const { to, subject, message } = req.body;
     const mailData = {
         from: 'noreplay@pejuangkoding.com',
@@ -31,7 +43,6 @@ export function sendMail(req: Request, res: Response, next: NextFunction) {
         if (error) {
             return console.log(error);
         }
-        console.log(info)
         res.status(200).send(
             {
                 message: "Email sent successfully",
