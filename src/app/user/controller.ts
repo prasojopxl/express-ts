@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response, NextFunction } from 'express';
 import joi from "joi"
 import bcryptjs from "bcryptjs"
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient()
 
@@ -107,6 +108,80 @@ export function getUserID(req: Request, res: Response, next: NextFunction) {
     }
     main()
 }
+
+export function getUserMe(req: Request, res: Response, next: NextFunction) {
+    const token = req.headers ? req.headers?.authorization : null
+    if (!token || token === undefined) {
+        return res.status(401).send({
+            message: "Forbidden Access"
+        });
+    }
+    const jwtToken = token?.split(" ").pop();
+    const dataJwt: any = jwt.verify(`${jwtToken}`, `${process.env.JWT_SECRET}`);
+
+    async function main() {
+        try {
+            const user = await prisma.users.findUnique({
+                where: {
+                    id: dataJwt.data.id
+                }
+            })
+            if (!user) {
+                return res.status(400).json({
+                    message: "User not found",
+                });
+            }
+            res.json(user)
+        } catch (error) {
+            res.status(401).send({
+                message: "Unauthorized"
+            });
+        }
+    }
+    main()
+}
+
+export function updateUserMe(req: Request, res: Response, next: NextFunction) {
+    const token = req.headers ? req.headers?.authorization : null
+    if (!token || token === undefined) {
+        return res.status(401).send({
+            message: "Forbidden Access"
+        });
+    }
+    const jwtToken = token?.split(" ").pop();
+    const dataJwt: any = jwt.verify(`${jwtToken}`, `${process.env.JWT_SECRET}`);
+
+    async function main() {
+        const checkUser = await prisma.users.findUnique({
+            where: {
+                id: dataJwt.data.id
+            }
+        })
+        const password = req.body.password ? await bcryptjs.hash(req.body.password, 10) : dataJwt.data.password
+        try {
+            const updateUser = await prisma.users.update({
+                where: {
+                    id: dataJwt.data.id
+                },
+                data: {
+                    name: req.body.name,
+                    password: password
+                }
+            })
+            res.json({
+                message: "User updated successfully",
+            })
+        } catch (error) {
+            res.status(401).send({
+                message: "Unauthorized"
+            });
+        }
+
+    }
+    main()
+}
+
+
 
 export function updateUser(req: Request, res: Response, next: NextFunction) {
     async function main() {
