@@ -30,16 +30,16 @@ export function createImage(req: Request, res: Response, next: NextFunction) {
 
     async function main() {
         try {
-            // const image = await prisma.images.create({
-            //     data: {
-            //         title: files[0].originalname,
-            //         url: `/public/${files[0].filename}`,
-            //         size: parseInt(files[0].size),
-            //         width: parseInt(`${imageSize(files[0].path).width}`),
-            //         height: parseInt(`${imageSize(files[0].path).height}`),
-            //         mimetype: files[0].mimetype
-            //     }
-            // })
+            const image = await prisma.images.create({
+                data: {
+                    title: files[0].originalname,
+                    url: `/public/${files[0].filename}`,
+                    size: parseInt(files[0].size),
+                    width: parseInt(`${imageSize(files[0].path).width}`),
+                    height: parseInt(`${imageSize(files[0].path).height}`),
+                    mimetype: files[0].mimetype
+                }
+            })
             res.status(201).send({
                 message: "Image upload successfully",
                 data: {
@@ -71,6 +71,18 @@ export function getImageID(req: Request, res: Response, next: NextFunction) {
                 })
             }
             res.json(image)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    main()
+}
+
+export function getImages(req: Request, res: Response, next: NextFunction) {
+    async function main() {
+        try {
+            const images = await prisma.images.findMany()
+            res.json(images)
         } catch (error) {
             console.log(error)
         }
