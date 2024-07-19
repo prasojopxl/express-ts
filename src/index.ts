@@ -59,5 +59,5 @@ app.use("/mail", routeMail)
 app.use("/auth", routeAuth)
 
 app.listen(port, () => {
-    console.log(`server is running on port ${port}`)
+    console.log(`server is running on http://localhost:${port}`)
 })

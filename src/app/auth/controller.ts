@@ -30,13 +30,13 @@ export function Login(req: Request, res: Response, next: NextFunction) {
             })
         }
         const checkPassword = await bcrypt.compare(req.body.password, checkUser.password)
-        console.log(checkUser)
         const token: any = jwt.sign({
             exp: Math.floor(Date.now() / 1000) + (60 * 60), //exp 1 hour
             data: {
                 id: checkUser.id,
                 username: checkUser.username,
-                role: checkUser.role
+                role: checkUser.role,
+                imageId: checkUser.imageId
             }
         }, `${process.env.JWT_SECRET}`)
         if (!checkPassword) {
@@ -46,6 +46,7 @@ export function Login(req: Request, res: Response, next: NextFunction) {
         }
         return res.json({
             message: "Login successfully",
+            name: checkUser.name,
             token
         })
     }
